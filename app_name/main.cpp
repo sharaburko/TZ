@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include "Quotes.h"
 #include <fstream>
@@ -6,56 +7,66 @@
 
 int main() {
 	setlocale(LC_ALL, "rus");
-	std::ofstream logs;
-	std::ofstream bars;
-	logs.open("Logs/Quotes.log", std::ios::app);
-	bars.open("Bars");
+	//std::ofstream logs;
+	//std::ofstream bars;
+	//logs.open("Logs/Quotes.log", std::ios::app);
+	//bars.open("Bars");
 
-	auto Server = CreateServer();
+	auto handle = CreateServer();
 
-	StartServer(Server);
-	int size = 1000;
-	char* buffer = new char[size];
-	int sizeData;
+	StartServer(handle);
+	int sizeBuffer = 200;
+	char* buffer  = new char [sizeBuffer];
+	int sizeData = ReadData(handle, buffer, sizeBuffer);
+	std::cout << "size: " << sizeData << std::endl;
+	std::cout << buffer << std::endl;
+	char* newBuffer = new char[sizeData];
+	strncpy(newBuffer, buffer, sizeData);
+	std::cout << newBuffer << std::endl;
 
 
-	if (logs.is_open()) {
-		std::cout << "Файл открыт\n";
-	}
-	else {
-		std::cout << "Файл не найден\n";
 
-	}
+	StopServer(handle);
+	DeleteServer(handle);
 
-	//int x = _getch();
-	//std::cout << x << std::endl;
 
-	//if (sizeData == -1) {
-	//	logs << "Сервер не содержит данных..\n";
+	//if (logs.is_open()) {
+	//	std::cout << "Файл открыт\n";
 	//}
 	//else {
-	//	logs << "Данные считаны...\n";
+	//	std::cout << "Файл не найден\n";
+
 	//}
 
-	while (true)
-	{
-		if (_kbhit()) {
-			if (_getch() == 3) {
-				delete[] buffer;
+	////int x = _getch();
+	////std::cout << x << std::endl;
 
-				StopServer(Server);
-				DeleteServer(Server);
+	////if (sizeData == -1) {
+	////	logs << "Сервер не содержит данных..\n";
+	////}
+	////else {
+	////	logs << "Данные считаны...\n";
+	////}
 
-				logs.close();
-				bars.close();
-				return 0;
-				break;
-			}
-		}
-		int sizeData; ReadData(Server, buffer, size);
-		//std::cout << ReadData(Server, buffer, size) << std::endl;
-		std::cout << buffer << std::endl;
-	}
+	//while (true)
+	//{
+	//	if (_kbhit()) {
+	//		if (_getch() == 3) {
+	//			delete[] buffer;
+
+	//			StopServer(Server);
+	//			DeleteServer(Server);
+
+	//			logs.close();
+	//			bars.close();
+	//			return 0;
+	//			break;
+	//		}
+	//	}
+	//	int sizeData; ReadData(Server, buffer, size);
+	//	//std::cout << ReadData(Server, buffer, size) << std::endl;
+	//	std::cout << buffer << std::endl;
+	//}
 
 
 
