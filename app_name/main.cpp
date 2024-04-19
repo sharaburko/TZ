@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <conio.h>
+#include <memory>
 
 int main() {
 	setlocale(LC_ALL, "rus");
@@ -15,14 +16,15 @@ int main() {
 	auto handle = CreateServer();
 
 	StartServer(handle);
-	int sizeBuffer = 200;
-	char* buffer  = new char [sizeBuffer];
-	int sizeData = ReadData(handle, buffer, sizeBuffer);
+	const int sizeBuffer = 2000;
+	const auto buffer  = std::unique_ptr<char []>(new char[sizeBuffer]);
+	memset(buffer.get(), 0, sizeBuffer);
+	
+	
+	int sizeData = ReadData(handle, buffer.get(), sizeBuffer);
 	std::cout << "size: " << sizeData << std::endl;
 	std::cout << buffer << std::endl;
-	char* newBuffer = new char[sizeData];
-	strncpy(newBuffer, buffer, sizeData);
-	std::cout << newBuffer << std::endl;
+
 
 
 
