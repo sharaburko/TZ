@@ -1,9 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include "Quotes.h"
 #include <fstream>
 #include <string>
 #include <conio.h>
+#include <memory>
 
 int main() {
 	setlocale(LC_ALL, "rus");
@@ -12,23 +14,18 @@ int main() {
 	//logs.open("Logs/Quotes.log", std::ios::app);
 	//bars.open("Bars");
 
+	const int sizeBuffer = 2000;
+	int sizeData = 0;
+	const auto buffer = std::unique_ptr<char[]>(new char[sizeBuffer]);
+
 	auto handle = CreateServer();
+	StartServer(handle);	
 
-	StartServer(handle);
-	int sizeBuffer = 200;
-	char* buffer  = new char [sizeBuffer];
-	int sizeData = ReadData(handle, buffer, sizeBuffer);
-	std::cout << "size: " << sizeData << std::endl;
-	std::cout << buffer << std::endl;
-	char* newBuffer = new char[sizeData];
-	strncpy(newBuffer, buffer, sizeData);
-	std::cout << newBuffer << std::endl;
+	//std::cout << "size: " << sizeData << std::endl;
+	//std::cout << buffer << std::endl;
 
-
-
-	StopServer(handle);
-	DeleteServer(handle);
-
+	//StopServer(handle);
+	//DeleteServer(handle);
 
 	//if (logs.is_open()) {
 	//	std::cout << "Файл открыт\n";
@@ -38,36 +35,38 @@ int main() {
 
 	//}
 
-	////int x = _getch();
-	////std::cout << x << std::endl;
+	if (sizeData == -1) {
+		std::cout << "Сервер не содержит данных..\n";
+	}
+	else {
+		std::cout <<  "Данные считываются...\n";
 
-	////if (sizeData == -1) {
-	////	logs << "Сервер не содержит данных..\n";
-	////}
-	////else {
-	////	logs << "Данные считаны...\n";
-	////}
+		int count = 0;
 
-	//while (true)
-	//{
-	//	if (_kbhit()) {
-	//		if (_getch() == 3) {
-	//			delete[] buffer;
+		while (true)
+		{
+			memset(buffer.get(), 0, sizeBuffer);
+			ReadData(handle, buffer.get(), sizeBuffer);
+			std::cout << buffer;
+			count++;
 
-	//			StopServer(Server);
-	//			DeleteServer(Server);
+			if (_kbhit() || count == 3 )
+			{
 
-	//			logs.close();
-	//			bars.close();
-	//			return 0;
-	//			break;
-	//		}
-	//	}
-	//	int sizeData; ReadData(Server, buffer, size);
-	//	//std::cout << ReadData(Server, buffer, size) << std::endl;
-	//	std::cout << buffer << std::endl;
-	//}
+				if (_getch() == 3 || count == 3)
+				{
+					std::cout << "\nCчитывание данных прервано...\n";
+					//logs.close();
+					//bars.close();
+					break;
+				}
 
+			}
 
+		}
 
+	}
+	StopServer(handle);
+	DeleteServer(handle);
+	return 0;
 }
