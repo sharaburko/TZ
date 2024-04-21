@@ -6,6 +6,11 @@
 #include <string>
 #include <conio.h>
 #include <memory>
+#include <Windows.h>
+#include "Bar.h"
+
+
+
 
 int main() {
 	setlocale(LC_ALL, "rus");
@@ -14,6 +19,8 @@ int main() {
 	//logs.open("Logs/Quotes.log", std::ios::app);
 	//bars.open("Bars");
 
+	SYSTEMTIME time;
+	
 	const int sizeBuffer = 2000;
 	int sizeData = 0;
 	const auto buffer = std::unique_ptr<char[]>(new char[sizeBuffer]);
@@ -24,7 +31,7 @@ int main() {
 	//std::cout << "size: " << sizeData << std::endl;
 	//std::cout << buffer << std::endl;
 
-	//StopServer(handle);
+	//StopServer(handle); 
 	//DeleteServer(handle);
 
 	//if (logs.is_open()) {
@@ -39,25 +46,34 @@ int main() {
 		std::cout << "Сервер не содержит данных..\n";
 	}
 	else {
-		std::cout <<  "Данные считываются...\n";
+		GetLocalTime(&time);
+		std::cout << std::endl << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << std::endl;
+		std::cout <<  "Данные считываются...\n\n";
 
-		int count = 0;
-
-		while (true)
+		const int start = time.wMinute;
+		for(size_t i = 0; i < 1; i++)
 		{
-			memset(buffer.get(), 0, sizeBuffer);
-			ReadData(handle, buffer.get(), sizeBuffer);
-			std::cout << buffer;
-			count++;
+			
+			GetLocalTime(&time);			
+			if (start == time.wMinute) {
+				memset(buffer.get(), 0, sizeBuffer);
+				int bufSize = ReadData(handle, buffer.get(), sizeBuffer);
 
-			if (_kbhit() || count == 3 )
+				for(int i = 0; i < bufSize; i++)
+
+				std::cout << buffer[i];
+				
+			}
+			
+
+			if (_kbhit() )
 			{
 
-				if (_getch() == 3 || count == 3)
-				{
-					std::cout << "\nCчитывание данных прервано...\n";
+				if (_getch() == 3)
+				{					
 					//logs.close();
 					//bars.close();
+					std::cout << "\nCчитывание данных прервано пользователем.\n";
 					break;
 				}
 
@@ -66,6 +82,9 @@ int main() {
 		}
 
 	}
+	GetLocalTime(&time);
+	std::cout << std::endl << std::endl  << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << std::endl;
+	std::cout << "Cчитывание данных окончено\n";
 	StopServer(handle);
 	DeleteServer(handle);
 	return 0;
