@@ -50,19 +50,24 @@ int main() {
 		std::cout << std::endl << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << std::endl;
 		std::cout <<  "Данные считываются...\n\n";
 
+		std::ofstream of("temp.txt", std::ios::app);
+		std::ifstream in;
 		const int start = time.wMinute;
-		for(size_t i = 0; i < 1; i++)
+
+		while(true)
 		{
 			
 			GetLocalTime(&time);			
+
 			if (start == time.wMinute) {
 				memset(buffer.get(), 0, sizeBuffer);
 				int bufSize = ReadData(handle, buffer.get(), sizeBuffer);
-
-				for(int i = 0; i < bufSize; i++)
-
-				std::cout << buffer[i];
-				
+				of.write(buffer.get(), bufSize);				
+			}
+			else {
+				of.close();
+				std::cout << "\nCчитывание данных в течение минуты окончено.\n";
+				break;
 			}
 			
 
