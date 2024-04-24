@@ -71,6 +71,13 @@ double& Bar::getPrice()
 	return price;
 }
 
+
+
+Bar::Bar()
+{
+
+}
+
 Bar::Bar(std::string exchangeRates, double price, int size, int month, int day, int year, int hour, int minute)
 {
 	setMonth(month);
@@ -80,4 +87,23 @@ Bar::Bar(std::string exchangeRates, double price, int size, int month, int day, 
 	setMinute(minute);
 	setExchangeRates(exchangeRates);
 	setPrice(price);
+}
+
+std::istream& operator >> (std::istream& stream, Bar& bar) {
+	std::string price;
+	std::string size;
+	std::getline(stream, bar.exchangeRates, ',');
+	std::cout << bar.exchangeRates << " ";
+	std::getline(stream, bar.sign, ',');
+	std::cout << bar.sign << " ";
+	std::getline(stream, price, ',');
+	std::cout << price << " ";
+	bar.price = std::stod(price);
+	std::cout << bar.price << " ";
+	std::getline(stream, size, '\n');
+	std::cout << size << " ";
+	bar.size = std::stod(size);
+	std::cout << bar.size << "\n";
+
+	return stream;
 }

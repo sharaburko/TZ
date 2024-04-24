@@ -8,6 +8,7 @@
 #include <memory>
 #include <Windows.h>
 #include "Bar.h"
+#include <vector>
 
 
 
@@ -52,10 +53,11 @@ int main() {
 
 		std::ofstream of("temp.txt", std::ios::app);
 		std::ifstream in;
+		std::vector <Bar> bars;
+
 		const int start = time.wMinute;
 
-		while(true)
-		{
+		while(true)	{
 			
 			GetLocalTime(&time);			
 
@@ -79,11 +81,28 @@ int main() {
 					//logs.close();
 					//bars.close();
 					std::cout << "\nCчитывание данных прервано пользователем.\n";
+					of.close();
 					break;
 				}
 
 			}
 
+		}
+
+		in.open("temp.txt");
+		Bar tempBar;
+
+		while (true) {
+
+
+			if (in.eof()) {
+				std::cout << "\nФайл считан.\n";
+				in.close();
+				break;
+			}
+
+			in >> tempBar;
+			bars.push_back(tempBar);
 		}
 
 	}

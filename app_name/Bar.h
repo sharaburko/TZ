@@ -1,17 +1,20 @@
 #pragma once
 #include <string>
+#include <iostream>
 
 class Bar
 {
 private:
 	std::string exchangeRates;
+	std::string sign;
 	double price;
+	int size;
 	int month;
 	int day;
 	int year;
 	int hour;
 	int minute;
-	int size;
+
 public:
 	Bar();
 	Bar(std::string exchangeRates, double price, int size, int month, int day, int year, int hour, int minute);
@@ -30,5 +33,6 @@ public:
 	int& getMinute();
 	std::string& getExchangeRates();
 	double& getPrice();
-};
 
+	friend std::istream& operator >> (std::istream& stream, Bar &bar);
+};
