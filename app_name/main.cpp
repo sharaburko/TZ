@@ -1,7 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include "Quotes.h"
 #include <fstream>
 #include <string>
 #include <conio.h>
@@ -9,107 +8,105 @@
 #include <Windows.h>
 #include "Bar.h"
 #include <vector>
+#include "Server.h"
+#include "Logs.h"
+#include <filesystem>
 
 
+bool isStopReadingData();
 
 
 int main() {
 	setlocale(LC_ALL, "rus");
-	//std::ofstream logs;
-	//std::ofstream bars;
-	//logs.open("Logs/Quotes.log", std::ios::app);
-	//bars.open("Bars");
 
 	SYSTEMTIME time;
-	
+	Server server;
+	Logs logs("Logs");
+
+	int start;
 	const int sizeBuffer = 2000;
 	int sizeData = 0;
 	const auto buffer = std::unique_ptr<char[]>(new char[sizeBuffer]);
 
-	auto handle = CreateServer();
-	StartServer(handle);	
+	std::ofstream of("temp.txt", std::ios::app);
+	std::ifstream in;
+	//std::vector <Bar> bars;
+	GetLocalTime(&time);
+	std::cout << std::endl << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << std::endl;
+	std::cout << "Data is being read...\n\n";
+	logs.AddAnEvent("Data is being read...");
+	auto path = std::filesystem::current_path();
+	std::cout << path << "/n";
 
-	//std::cout << "size: " << sizeData << std::endl;
-	//std::cout << buffer << std::endl;
+	start = time.wMinute;
+	while(true)	{
+		
+		GetLocalTime(&time);			
 
-	//StopServer(handle); 
-	//DeleteServer(handle);
+		if (start == time.wMinute) {
+			memset(buffer.get(), 0, sizeBuffer);
+			int sizeData = ReadData(server.getHandle(), buffer.get(), sizeBuffer);
 
-	//if (logs.is_open()) {
-	//	std::cout << "Файл открыт\n";
-	//}
-	//else {
-	//	std::cout << "Файл не найден\n";
-
-	//}
-
-	if (sizeData == -1) {
-		std::cout << "Сервер не содержит данных..\n";
-	}
-	else {
-		GetLocalTime(&time);
-		std::cout << std::endl << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << std::endl;
-		std::cout <<  "Данные считываются...\n\n";
-
-		std::ofstream of("temp.txt", std::ios::app);
-		std::ifstream in;
-		std::vector <Bar> bars;
-
-		const int start = time.wMinute;
-
-		while(true)	{
-			
-			GetLocalTime(&time);			
-
-			if (start == time.wMinute) {
-				memset(buffer.get(), 0, sizeBuffer);
-				int bufSize = ReadData(handle, buffer.get(), sizeBuffer);
-				of.write(buffer.get(), bufSize);				
-			}
-			else {
-				of.close();
-				std::cout << "\nCчитывание данных в течение минуты окончено.\n";
+			if (sizeData == -1) {
+				std::cout << "The server does not contain data.\n";
 				break;
 			}
-			
-
-			if (_kbhit() )
+			else
 			{
-
-				if (_getch() == 3)
-				{					
-					//logs.close();
-					//bars.close();
-					std::cout << "\nCчитывание данных прервано пользователем.\n";
-					of.close();
-					break;
-				}
-
+				of.write(buffer.get(), sizeData);
 			}
 
 		}
+		else {
+			of.close();
+			std::cout << "\nData reading for one minute is completed.\n";
+			break;
+		}			
 
-		in.open("temp.txt");
-		Bar tempBar;
-
-		while (true) {
-
-
-			if (in.eof()) {
-				std::cout << "\nФайл считан.\n";
-				in.close();
-				break;
-			}
-
-			in >> tempBar;
-			bars.push_back(tempBar);
+		if(isStopReadingData())
+		{
+			break;
 		}
+
 
 	}
+
+	//in.open("temp.txt");
+	//Bar tempBar;
+
+	//while (true) {
+
+
+	//	if (in.eof()) {
+	//		std::cout << "\nФайл считан.\n";
+	//		in.close();
+	//		break;
+	//	}
+
+	//	in >> tempBar;
+	//	bars.push_back(tempBar);
+	//}
+
 	GetLocalTime(&time);
 	std::cout << std::endl << std::endl  << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << std::endl;
 	std::cout << "Cчитывание данных окончено\n";
-	StopServer(handle);
-	DeleteServer(handle);
+
 	return 0;
+}
+
+bool isStopReadingData()
+{
+	if (_kbhit())
+	{
+
+		if (_getch() == 3)
+		{
+			std::cout << "\nCчитывание данных прервано пользователем.\n";
+			return  true;
+		}
+
+	}
+
+	return false;
+
 }

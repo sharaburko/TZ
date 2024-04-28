@@ -7,6 +7,7 @@ class Bar
 private:
 	std::string exchangeRates;
 	std::string sign;
+	std::string time;
 	double price;
 	int size;
 	int month;
