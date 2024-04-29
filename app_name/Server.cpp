@@ -3,20 +3,44 @@
 Server::Server()
 {
 	handle = CreateServer();
-	std::cout << "Server created\n";
-	StartServer(handle);
-	std::cout << "Server is running\n";
+	addEventToLog("Server created");
 }
 
 Server::~Server()
 {
-	StopServer(handle);
-	std::cout << "Server is stopped\n";
+	stop();
 	DeleteServer(handle);
-	std::cout << "Server deleted\n";
+	addEventToLog("Server deleted");
+}
+
+void Server::start()
+{
+	StartServer(handle);
+	addEventToLog("Server is running");
+}
+
+void Server::stop()
+{
+	StopServer(handle);
+	addEventToLog("Server is stopped");
 }
 
 void* Server::getHandle()
 {
 	return handle;
+}
+
+const SYSTEMTIME& Server::getTime()
+{
+	return time;
+}
+
+Logs& Server::getLogs()
+{
+	return logs;
+}
+
+void Server::addEventToLog(const std::string& message)
+{
+	logs.AddAnEvent(message, time);
 }

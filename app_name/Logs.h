@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <Windows.h>
 
 class Logs
 {
@@ -10,8 +11,8 @@ private:
 	std::string path;
 	std::fstream write;
 public:
-	Logs(std::string path);
+	Logs();
 	~Logs();
-	void AddAnEvent(std::string event);
+	void AddAnEvent(const std::string &event, SYSTEMTIME& time);
 };
 

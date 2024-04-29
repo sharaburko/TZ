@@ -1,8 +1,8 @@
 #include "Logs.h"
 
-Logs::Logs(std::string path)
+Logs::Logs()
 {
-	this->path = std::filesystem::current_path().string() + "\\" + path;
+	path = std::filesystem::current_path().string() + "\\" + "Logs";
 
 	if(!std::filesystem::is_directory(path))
 	{
@@ -32,7 +32,12 @@ Logs::~Logs()
 	write.close();
 }
 
-void Logs::AddAnEvent(std::string event)
+void Logs::AddAnEvent(const std::string &event, SYSTEMTIME &time)
 {
+	GetLocalTime(&time);
+	write << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
 	write << event << "\n";
+	std::cout << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
+	std::cout << event << "\n";
 }
+

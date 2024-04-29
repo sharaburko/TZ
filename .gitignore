@@ -6,3 +6,6 @@
 x64/
 x86/
 packages/
+TZ/
+[Temp]/
+app_name/[Llogs]/
