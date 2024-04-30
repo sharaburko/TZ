@@ -26,10 +26,10 @@ int main() {
 	int sizeData = 0;
 	const auto buffer = std::unique_ptr<char[]>(new char[sizeBuffer]);
 
-	std::ofstream of("Temp/temp.txt", std::ios::app);
+	std::ofstream writeBuffer("Temp/temp.txt", std::ios::app);
 
-	while (true) {
-
+	for (size_t i = 0; i < 10; i++)
+	{
 		memset(buffer.get(), 0, sizeBuffer);
 		int sizeData = ReadData(server.getHandle(), buffer.get(), sizeBuffer);
 
@@ -39,19 +39,19 @@ int main() {
 		}
 		else
 		{
-			of.write(buffer.get(), sizeData);
+			writeBuffer.write(buffer.get(), sizeData);
 		}
 
-		if (isStopReadingData())
-		{
-			server.addEventToLog("Data reading was interrupted by the user.");
-			break;
-		}
+		//if (isStopReadingData())
+		//{
+		//	server.addEventToLog("Data reading was interrupted by the user.");
+		//	writeBuffer.close();
+		//	break;
+		//}
 
 	}
 
-	of.close();
-	server.addEventToLog("Data reading for one minute is completed");
+	server.stop();
 
 	return 0;
 }

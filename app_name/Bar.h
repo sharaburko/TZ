@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 class Bar
 {
@@ -15,6 +18,8 @@ private:
 	int year;
 	int hour;
 	int minute;
+
+	std::string path;
 
 public:
 	Bar();

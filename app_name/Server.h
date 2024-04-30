@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include "Logs.h"
+#include "Bar.h"
 #include "Windows.h">
 #include <string>
 
@@ -14,6 +15,7 @@ private:
 	char* buffer;
 	SYSTEMTIME time;
 	Logs logs;
+	Bar bar;
 
 public:
 	Server();

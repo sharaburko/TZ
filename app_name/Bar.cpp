@@ -75,7 +75,15 @@ double& Bar::getPrice()
 
 Bar::Bar()
 {
+	path = fs::current_path().string() + "\\" + "Bars";
 
+	if (fs::is_directory(path)) {
+		std::uintmax_t n{ fs::remove_all(path) };
+	}
+	else
+	{
+		fs::create_directory(path);
+	}
 }
 
 Bar::Bar(std::string exchangeRates, double price, int size, int month, int day, int year, int hour, int minute)

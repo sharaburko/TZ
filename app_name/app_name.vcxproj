@@ -148,14 +148,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bar.cpp" />
-    <ClCompile Include="Bars.cpp" />
     <ClCompile Include="Logs.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bar.h" />
-    <ClInclude Include="Bars.h" />
     <ClInclude Include="Logs.h" />
     <ClInclude Include="Server.h" />
   </ItemGroup>

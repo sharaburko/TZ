@@ -8,7 +8,6 @@ Server::Server()
 
 Server::~Server()
 {
-	stop();
 	DeleteServer(handle);
 	addEventToLog("Server deleted");
 }
