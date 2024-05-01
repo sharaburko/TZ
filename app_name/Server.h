@@ -11,11 +11,13 @@ class Server
 {
 private:
 	void* handle;
-	int sizeBuffer;
-	char* buffer;
+	const int sizeBuffer = 2000;
+	std::shared_ptr<char[]> buffer;
+
 	SYSTEMTIME time;
-	Logs logs;
-	Bar bar;
+
+	Logs logs{time};
+	Bar bar{logs, time};
 
 public:
 	Server();

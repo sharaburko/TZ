@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
+#include "Logs.h"
 
 namespace fs = std::filesystem;
 
@@ -13,30 +14,16 @@ private:
 	std::string time;
 	double price;
 	int size;
-	int month;
-	int day;
-	int year;
-	int hour;
-	int minute;
 
 	std::string path;
 
 public:
-	Bar();
-	Bar(std::string exchangeRates, double price, int size, int month, int day, int year, int hour, int minute);
-	void setMonth(int month);
-	void setDay(int day);
-	void setYear(int year);
-	void setHour(int hour);
-	void setMinute(int minute);
+	Bar(Logs &logs, SYSTEMTIME& time);
+	Bar(std::string exchangeRates, double price, int size);
+
 	void setExchangeRates(std::string exchangeRates);
 	void setPrice(double price);
 
-	int& getMonth();
-	int& getDay();
-	int& getYear();
-	int& getHour();
-	int& getMinute();
 	std::string& getExchangeRates();
 	double& getPrice();
 

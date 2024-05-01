@@ -11,7 +11,7 @@ private:
 	std::string path;
 	std::fstream write;
 public:
-	Logs();
+	Logs(SYSTEMTIME& time);
 	~Logs();
 	void AddAnEvent(const std::string &event, SYSTEMTIME& time);
 };

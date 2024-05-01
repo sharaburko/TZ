@@ -1,18 +1,20 @@
 #include "Logs.h"
 
-Logs::Logs()
+Logs::Logs(SYSTEMTIME& time)
 {
 	path = std::filesystem::current_path().string() + "\\" + "Logs";
+	GetLocalTime(&time);
 
 	if(!std::filesystem::is_directory(path))
 	{
-		std::cout << "Папка Logs не найдена\n";
 		std::filesystem::create_directory(path);
-		std::cout << "Папка Logs создана\n";
+		std::cout << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
+		std::cout << "Logs folder created\n";
 	}
 	else
 	{
-		std::cout << "Папка Logs существует\n";
+		std::cout << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
+		std::cout << "Logs folder found\n";
 	}
 
 	write.open(path + "\\" + "Quotes.log" , std::ios::app | std::ios::out);
@@ -21,10 +23,7 @@ Logs::Logs()
 	{
 		std::cout << "Error. Opening error.\n";
 	}
-	else
-	{
-		write << "OK\n";
-	}
+
 }
 
 Logs::~Logs()

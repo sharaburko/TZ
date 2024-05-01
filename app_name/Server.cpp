@@ -4,7 +4,8 @@ Server::Server()
 {
 	handle = CreateServer();
 	addEventToLog("Server created");
-}
+	buffer = std::shared_ptr<char[]>(new char[sizeBuffer]);
+	}
 
 Server::~Server()
 {
