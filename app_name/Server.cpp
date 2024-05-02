@@ -25,11 +25,6 @@ void Server::stop()
 	addEventToLog("Server is stopped");
 }
 
-void* Server::getHandle()
-{
-	return handle;
-}
-
 const SYSTEMTIME& Server::getTime()
 {
 	return time;
@@ -43,4 +38,39 @@ Logs& Server::getLogs()
 void Server::addEventToLog(const std::string& message)
 {
 	logs.AddAnEvent(message, time);
+}
+
+void Server::read()
+{
+	while (true)
+	{
+		GetLocalTime(&time);
+		std::thread th;
+		memset(buffer.get(), 0, sizeBuffer);
+
+		int sizeData = ReadData(handle, buffer.get(), sizeBuffer);
+
+		std::cout << buffer.get();
+
+		if (_kbhit())
+		{
+
+			//if (getch() == 3)  //Ctrl + C
+			//{
+			//	break;
+			//}
+
+			break;
+		}
+
+	}
+	std::cout << '\n';
+
+}
+
+void Server::run()
+{
+	start();
+	read();
+	stop();
 }

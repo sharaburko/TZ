@@ -6,6 +6,7 @@
 #include "Bar.h"
 #include "Windows.h">
 #include <string>
+#include <conio.h>
 
 class Server
 {
@@ -19,12 +20,14 @@ private:
 	Logs logs{time};
 	Bar bar{logs, time};
 
-public:
-	Server();
-	~Server();
 	void start();
 	void stop();
-	void* getHandle();
+	void read();
+
+public:
+	void run();
+	Server();
+	~Server();
 	const SYSTEMTIME & getTime();
 	Logs& getLogs();
 	void addEventToLog(const std::string&  message);
