@@ -1,12 +1,16 @@
 #pragma once
 #include "Quotes.h"
 #include <memory>
-#include <iostream>
+#include <fstream>
 #include "Logs.h"
 #include "Bar.h"
 #include "Windows.h">
 #include <string>
 #include <conio.h>
+#include <sstream>
+#include <regex>
+#include <unordered_map>
+#include <algorithm>
 
 class Server
 {
