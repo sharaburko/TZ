@@ -11,13 +11,18 @@
 #include <regex>
 #include <unordered_map>
 #include <algorithm>
+#include <mutex>
+#include <thread>
+ 
 
 class Server
 {
 private:
+	std::mutex mtx;
 	void* handle;
 	const int sizeBuffer = 2000;
 	std::shared_ptr<char[]> buffer;
+	std::unordered_map<std::string, std::vector <double>> map;
 
 	SYSTEMTIME time;
 
@@ -27,13 +32,13 @@ private:
 	void start();
 	void stop();
 	void read();
+	void write();
 
 public:
-	void run();
 	Server();
 	~Server();
-	const SYSTEMTIME & getTime();
-	Logs& getLogs();
+
 	void addEventToLog(const std::string&  message);
+	void run();
 };
 
