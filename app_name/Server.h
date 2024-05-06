@@ -22,7 +22,8 @@ private:
 	void* handle;
 	const int sizeBuffer = 2000;
 	std::shared_ptr<char[]> buffer;
-	std::unordered_map<std::string, std::vector <double>> map;
+	std::unordered_map<std::string, std::vector <double>> map1;
+	std::unordered_map<std::string, std::vector <double>> map2;
 
 	SYSTEMTIME time;
 
@@ -31,8 +32,9 @@ private:
 
 	void start();
 	void stop();
-	void read();
-	void write();
+	void read(std::unordered_map<std::string, std::vector <double>>& map);
+	void write(std::unordered_map<std::string, std::vector <double>>& map);
+	const std::string& getTimeAndDate();
 
 public:
 	Server();

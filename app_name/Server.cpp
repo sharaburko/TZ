@@ -30,7 +30,14 @@ void Server::addEventToLog(const std::string& message)
 	logs.AddAnEvent(message, time);
 }
 
-void Server::read()
+const std::string& Server::getTimeAndDate()
+{
+	return std::to_string(time.wMonth) + "/" + std::to_string(time.wDay) + "/" + 
+		   std::to_string(time.wYear) + " " + std::to_string(time.wHour) + ":" + 
+		   std::to_string(time.wMinute);
+}
+
+void Server::read(std::unordered_map<std::string, std::vector <double>>& map)
 {
 	std::stringstream stringBufer;
 	std::string tempString;
@@ -64,7 +71,7 @@ void Server::read()
 				map[name] = temp;
 			}
 
-			std::cout << name << " " << price << std::endl;				
+			std::cout << getTimeAndDate() << name << " " << price << std::endl;
 		}
 
 	}
@@ -73,7 +80,7 @@ void Server::read()
 
 }
 
-void Server::write()
+void Server::write(std::unordered_map<std::string, std::vector <double>>& map)
 {
 
 	std::fstream write;
@@ -84,9 +91,10 @@ void Server::write()
 		double min = *std::min_element(begin(price), end(price));
 		double max = *std::max_element(begin(price), end(price));
 		write << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << ", "
-			<< price.front() << " " << min << " " << max << " " << price.back();
+			<< price.front() << " " << min << " " << max << " " << price.back() << "\n";
 		write.close();
 	}
+	map.clear();
 
 }
  
@@ -98,22 +106,35 @@ void Server::run()
 	{
 		GetLocalTime(&time);
 
-		if(!time.wMinute % 2)
-		{
-			std::thread t1([&]() {
-				read();
-			});
-			t1.detach();
-		}
-		else
-		{
-			std::thread t2([&]() {
-				read();
-			});
-			t2.detach();
-		}
+		std::thread t1([&]() {
 
-		std::cout << std::this_thread::get_id << std::endl;			
+			while(!time.wMinute % 2)
+			{
+				GetLocalTime(&time);
+
+				read(map1);
+			}
+
+		});
+
+		write(map2);
+
+		t1.join();
+
+		std::thread t2([&]() {
+
+			while (time.wMinute % 2)
+			{
+				GetLocalTime(&time);
+
+				read(map2);
+			}
+
+		});
+
+		write(map1);
+		t2.join();
+
 
 		if (_kbhit())
 		{
@@ -128,8 +149,6 @@ void Server::run()
 
 		
 	}
-
-	write();
 
 	stop();
 }
