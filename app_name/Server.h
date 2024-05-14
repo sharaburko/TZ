@@ -18,12 +18,12 @@
 class Server
 {
 private:
-	std::mutex mtx;
 	void* handle;
 	const int sizeBuffer = 2000;
 	std::shared_ptr<char[]> buffer;
 	std::unordered_map<std::string, std::vector <double>> map1;
 	std::unordered_map<std::string, std::vector <double>> map2;
+	std::mutex mtx;
 
 	SYSTEMTIME time;
 
