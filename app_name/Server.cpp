@@ -41,10 +41,8 @@ void Server::read(std::unordered_map<std::string, std::vector <double>>& map)
 {
 	//mtx.lock();
 
-	int readingStartTime = 0;
-
 	GetLocalTime(&time);
-	readingStartTime = time.wMinute;
+	int readingStartTime = time.wMinute;
 
 	while (!(time.wMinute - readingStartTime)) {
 		std::stringstream stringBuffer;
@@ -123,6 +121,8 @@ void Server::run()
 	start();
 	GetLocalTime(&time);
 
+	addEventToLog("Data reading started");
+
 	while (isReadData)
 	{
 
@@ -141,7 +141,7 @@ void Server::run()
 		GetLocalTime(&time);
 	}
 
-	std::cout << "Чтение прервано. Пождите минуту.. идёт обработка записей\n";
+	addEventToLog("Data reading is complete. Loading...");
 	if(!map1.empty()) write(map1);
 	if(!map2.empty()) write(map2);
 
