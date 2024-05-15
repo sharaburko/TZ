@@ -1,4 +1,6 @@
+
 #pragma once
+
 #include "Quotes.h"
 #include <memory>
 #include <fstream>
@@ -20,10 +22,11 @@ class Server
 private:
 	void* handle;
 	const int sizeBuffer = 2000;
+	bool isReadData = 1;
 	std::shared_ptr<char[]> buffer;
 	std::unordered_map<std::string, std::vector <double>> map1;
 	std::unordered_map<std::string, std::vector <double>> map2;
-	std::mutex mtx;
+	//std::mutex mtx;
 
 	SYSTEMTIME time;
 

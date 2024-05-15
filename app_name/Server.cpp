@@ -81,6 +81,18 @@ void Server::read(std::unordered_map<std::string, std::vector <double>>& map)
 
 		}
 
+		if (_kbhit())
+		{
+			//if (_getch() == 3)  //Ctrl + C
+			//{
+			//	break;
+			//	isReadData = false;
+			//}
+			
+			isReadData = false;
+			break;
+		}
+
 		GetLocalTime(&time);
 	}
 
@@ -109,11 +121,9 @@ void Server::write(std::unordered_map<std::string, std::vector <double>>& map)
 void Server::run()
 {
 	start();
-
 	GetLocalTime(&time);
-	int startTime = time.wMinute;
 
-	while (time.wMinute - startTime != 3)
+	while (isReadData)
 	{
 
 		if (time.wMinute % 2) {
@@ -128,20 +138,10 @@ void Server::run()
 			t1.join();
 		}
 
-
-		if (_kbhit())
-		{
-			//if (getch() == 3)  //Ctrl + C
-			//{
-			//	break;
-			//}
-
-			break;
-		}
-
 		GetLocalTime(&time);
 	}
 
+	std::cout << "Чтение прервано. Пождите минуту.. идёт обработка записей\n";
 	if(!map1.empty()) write(map1);
 	if(!map2.empty()) write(map2);
 
