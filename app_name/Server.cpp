@@ -5,12 +5,35 @@ Server::Server()
 	handle = CreateServer();
 	addEventToLog("Server created");
 	buffer = std::shared_ptr<char[]>(new char[sizeBuffer]);
-	}
+
+	createBars();
+}
 
 Server::~Server()
 {
 	DeleteServer(handle);
 	addEventToLog("Server deleted");
+}
+
+void Server::createBars()
+{
+	const size_t countBars = 2;
+	const std::string path = fs::current_path().string() + "\\" + "Bars";
+
+	if (fs::is_directory(path)) {
+		std::uintmax_t n{ fs::remove_all(path + "\\") };
+		logs.AddAnEvent("Bars folder cleared", time);
+	}
+
+	fs::create_directory(path);
+	logs.AddAnEvent("Bars folder create", time);
+
+	bars.reserve(countBars);
+
+	for (size_t i = 0; i < countBars; i++)
+	{
+		bars.emplace_back();
+	}
 }
 
 void Server::start()
@@ -37,11 +60,13 @@ const std::string& Server::getTimeAndDate()
 		   std::to_string(time.wMinute);
 }
 
-void Server::read(std::unordered_map<std::string, std::vector <double>>& map)
+void Server::read(Bar& bar)
 {
 	//mtx.lock();
 
 	GetLocalTime(&time);
+	bar.setTimeAndDateRead(time);
+
 	int readingStartTime = time.wMinute;
 
 	while (!(time.wMinute - readingStartTime)) {
@@ -64,17 +89,7 @@ void Server::read(std::unordered_map<std::string, std::vector <double>>& map)
 				double price;
 				streamPrice >> price;
 
-				if (map.contains(name))
-				{
-					map[name].push_back(price);
-				}
-				else
-				{
-					std::vector <double> temp;
-					temp.push_back(price);
-					map[name] = temp;
-				}
-
+				bar.addElementToMap(name, price);
 			}			
 
 		}
@@ -97,23 +112,23 @@ void Server::read(std::unordered_map<std::string, std::vector <double>>& map)
 	//mtx.unlock();
 }
 
-void Server::write(std::unordered_map<std::string, std::vector <double>>& map)
+void Server::write(Bar &bar)
 {
 	std::fstream write;
 
-	for (const auto& [name, price] : map)
+	for (const auto& [name, price] : bar.getMap())
 	{
 		write.open("Bars//" + name + ".txt", std::ios::out | std::ios::app);
+
 		double min = *std::min_element(begin(price), end(price));
 		double max = *std::max_element(begin(price), end(price));
-		std::string dateAndTime = std::to_string(time.wMonth) + "/" + std::to_string(time.wDay) + "/" +
-			std::to_string(time.wYear) + " " + std::to_string(time.wHour) + ":" +
-			std::to_string(time.wMinute);
 
-		write << dateAndTime << ", " << price.front() << " " << min << " " << max << " " << price.back() << "\n";
+		write << bar.getTimeAndDateRead() << ", " << price.front() << " " << min << " " << max << " " << price.back() << "\n";
+		
 		write.close();
 	}
-	map.clear();
+
+	bar.clearMap();
 }
  
 void Server::run()
@@ -127,14 +142,22 @@ void Server::run()
 	{
 
 		if (time.wMinute % 2) {
-			std::thread t1([&](){read(map1);	});
-			if (!map2.empty()) write(map2);
+			std::thread t1([&](){read(bars.front()); });
+
+			if (!bars.back().getMap().empty()) {
+				write(bars.back());
+			}
+
 			t1.join();
 		}
 		else
 		{
-			std::thread t1([&]() {read(map2); });
-			if (!map1.empty()) write(map1);
+			std::thread t1([&]() {bars.back(); });
+
+			if (!bars.front().getMap().empty()) {
+				write(bars.front());
+			}
+
 			t1.join();
 		}
 
@@ -142,8 +165,13 @@ void Server::run()
 	}
 
 	addEventToLog("Data reading is complete. Loading...");
-	if(!map1.empty()) write(map1);
-	if(!map2.empty()) write(map2);
+
+	for (auto & bar : bars)
+	{
+		if (!bar.getMap().empty()) {
+			write(bar);
+		}
+	}
 
 	stop();
 }

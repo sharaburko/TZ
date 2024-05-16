@@ -22,22 +22,24 @@ class Server
 private:
 	void* handle;
 	const int sizeBuffer = 2000;
-	bool isReadData = 1;
 	std::shared_ptr<char[]> buffer;
-	std::unordered_map<std::string, std::vector <double>> map1;
-	std::string timeAndDateRead;
-	std::unordered_map<std::string, std::vector <double>> map2;
+	bool isReadData = 1;
+
+	std::vector <Bar> bars;	
+	//std::unordered_map<std::string, std::vector <double>> map1;
+	//std::unordered_map<std::string, std::vector <double>> map2;
 	//std::mutex mtx;
 
 	SYSTEMTIME time;
 
 	Logs logs{time};
-	Bar bar{logs, time};
+	//Bar bar{logs, time};
 
+	void createBars();
 	void start();
 	void stop();
-	void read(std::unordered_map<std::string, std::vector <double>>& map);
-	void write(std::unordered_map<std::string, std::vector <double>>& map);
+	void read(Bar &bar);
+	void write(Bar &bar);
 	const std::string& getTimeAndDate();
 
 public:
