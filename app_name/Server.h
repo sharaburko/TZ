@@ -25,28 +25,21 @@ private:
 	std::shared_ptr<char[]> buffer;
 	bool isReadData = 1;
 
-	std::vector <Bar> bars;	
-	//std::unordered_map<std::string, std::vector <double>> map1;
-	//std::unordered_map<std::string, std::vector <double>> map2;
-	//std::mutex mtx;
+	std::vector <Bar> bars;
+	Logs logs{ time };
 
 	SYSTEMTIME time;
-
-	Logs logs{time};
-	//Bar bar{logs, time};
 
 	void createBars();
 	void start();
 	void stop();
 	void read(Bar &bar);
 	void write(Bar &bar);
-	const std::string& getTimeAndDate();
-
+	void addEventToLog(const std::string& message);
 public:
 	Server();
 	~Server();
 
-	void addEventToLog(const std::string&  message);
 	void run();
 };
 

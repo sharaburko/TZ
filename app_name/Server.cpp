@@ -17,16 +17,16 @@ Server::~Server()
 
 void Server::createBars()
 {
-	const size_t countBars = 2;
-	const std::string path = fs::current_path().string() + "\\" + "Bars";
+	constexpr  size_t countBars = 2;
+	const std::string path = std::filesystem::current_path().string() + "\\" + "Bars";
 
-	if (fs::is_directory(path)) {
-		std::uintmax_t n{ fs::remove_all(path + "\\") };
-		logs.AddAnEvent("Bars folder cleared", time);
+	if (std::filesystem::is_directory(path)) {
+		std::uintmax_t n{ std::filesystem::remove_all(path + "\\") };
+		addEventToLog("Bars folder cleared");
 	}
 
-	fs::create_directory(path);
-	logs.AddAnEvent("Bars folder create", time);
+	std::filesystem::create_directory(path);
+	addEventToLog("Bars folder create");
 
 	bars.reserve(countBars);
 
@@ -53,41 +53,33 @@ void Server::addEventToLog(const std::string& message)
 	logs.AddAnEvent(message, time);
 }
 
-const std::string& Server::getTimeAndDate()
-{
-	return std::to_string(time.wMonth) + "/" + std::to_string(time.wDay) + "/" + 
-		   std::to_string(time.wYear) + " " + std::to_string(time.wHour) + ":" + 
-		   std::to_string(time.wMinute);
-}
-
 void Server::read(Bar& bar)
 {
-	//mtx.lock();
-
 	GetLocalTime(&time);
 	bar.setTimeAndDateRead(time);
+	int timeStartReading = time.wMinute;
 
-	int readingStartTime = time.wMinute;
+	while (!(time.wMinute - timeStartReading)) {
+		std::stringstream stringStream;
+		std::string strBuffer;
 
-	while (!(time.wMinute - readingStartTime)) {
-		std::stringstream stringBuffer;
-		std::string tempString;
 		memset(buffer.get(), 0, sizeBuffer);
 		int sizeData = ReadData(handle, buffer.get(), sizeBuffer);
 
-		stringBuffer << buffer.get();
+		stringStream << buffer.get();
 
-		while (stringBuffer >> tempString)
+		while (stringStream >> strBuffer)
 		{
 			std::cmatch result;
 			std::regex regular("(\\w{6})""(,{1})" "(\\w+)" "(,{1})" "([\\d\.]+)" "(,{1})" "(\\d+)");
 
-			if (std::regex_match(tempString.c_str(), result, regular))
+			if (std::regex_match(strBuffer.c_str(), result, regular))
 			{
 				std::string name = result[1].str() + "_" + result[3].str();
-				std::stringstream streamPrice(result[5]);
+
+				std::stringstream priceStream(result[5]);
 				double price;
-				streamPrice >> price;
+				priceStream >> price;
 
 				bar.addElementToMap(name, price);
 			}			
@@ -109,7 +101,6 @@ void Server::read(Bar& bar)
 		GetLocalTime(&time);
 	}
 
-	//mtx.unlock();
 }
 
 void Server::write(Bar &bar)
@@ -138,7 +129,7 @@ void Server::run()
 
 	addEventToLog("Data reading started");
 
-	while (isReadData)
+ 	while (isReadData)
 	{
 
 		if (time.wMinute % 2) {
@@ -152,7 +143,7 @@ void Server::run()
 		}
 		else
 		{
-			std::thread t1([&]() {bars.back(); });
+			std::thread t1([&]() {read(bars.back()); });
 
 			if (!bars.front().getMap().empty()) {
 				write(bars.front());

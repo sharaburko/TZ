@@ -4,17 +4,18 @@ Logs::Logs(SYSTEMTIME& time)
 {
 	path = std::filesystem::current_path().string() + "\\" + "Logs";
 	GetLocalTime(&time);
+	std::string timeAndDateCreate = std::to_string(time.wDay) + "/" + std::to_string(time.wMonth) + "/" +
+									std::to_string(time.wYear) + " " + std::to_string(time.wHour) + ":" +
+									std::to_string(time.wMinute);
 
 	if(!std::filesystem::is_directory(path))
 	{
 		std::filesystem::create_directory(path);
-		std::cout << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
-		std::cout << "Logs folder created\n";
+		std::cout << timeAndDateCreate << " " << "Logs folder created\n";
 	}
 	else
 	{
-		std::cout << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
-		std::cout << "Logs folder found\n";
+		std::cout << timeAndDateCreate << " " << "Logs folder found\n";
 	}
 
 	write.open(path + "\\" + "Quotes.log" , std::ios::app | std::ios::out);
@@ -22,6 +23,7 @@ Logs::Logs(SYSTEMTIME& time)
 	if (!write.is_open())
 	{
 		std::cout << "Error. Opening error.\n";
+		exit(1);
 	}
 
 }
@@ -34,9 +36,12 @@ Logs::~Logs()
 void Logs::AddAnEvent(const std::string &event, SYSTEMTIME &time)
 {
 	GetLocalTime(&time);
-	write << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
-	write << event << "\n";
-	std::cout << time.wMonth << "/" << time.wDay << "/" << time.wYear << " " << time.wHour << ":" << time.wMinute << " ";
-	std::cout << event << "\n";
+
+	std::string timeAndDateAddEvent = std::to_string(time.wDay) + "/" + std::to_string(time.wMonth) + "/" +
+									  std::to_string(time.wYear) + " " + std::to_string(time.wHour) + ":" +
+									  std::to_string(time.wMinute);
+
+	write << timeAndDateAddEvent << " " << event << "\n";
+	std::cout << timeAndDateAddEvent << " " << event << "\n";
 }
 
