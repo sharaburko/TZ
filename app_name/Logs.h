@@ -10,6 +10,7 @@ class Logs
 private:
 	std::string path;
 	std::fstream write;
+	std::string timeAndDate(SYSTEMTIME& time);
 public:
 	Logs(SYSTEMTIME& time);
 	~Logs();

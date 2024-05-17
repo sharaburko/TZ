@@ -53,6 +53,32 @@ void Server::addEventToLog(const std::string& message)
 	logs.AddAnEvent(message, time);
 }
 
+void Server::addElementToMapInBar(char *buffer, Bar& bar)
+{
+	std::stringstream stringStream;
+	std::string strBuffer;
+
+	stringStream << buffer;
+
+	while (stringStream >> strBuffer)
+	{
+		std::cmatch result;
+		std::regex regular("(\\w{6})""(,{1})" "(\\w+)" "(,{1})" "([\\d\.]+)" "(,{1})" "(\\d+)");
+
+		if (std::regex_match(strBuffer.c_str(), result, regular))
+		{
+			std::string name = result[1].str() + "_" + result[3].str();
+
+			std::stringstream priceStream(result[5]);
+			double price;
+			priceStream >> price;
+
+			bar.addElementToMap(name, price);
+		}
+	}
+}
+
+
 void Server::read(Bar& bar)
 {
 	GetLocalTime(&time);
@@ -60,11 +86,13 @@ void Server::read(Bar& bar)
 	int timeStartReading = time.wMinute;
 
 	while (!(time.wMinute - timeStartReading)) {
-		std::stringstream stringStream;
-		std::string strBuffer;
 
 		memset(buffer.get(), 0, sizeBuffer);
-		int sizeData = ReadData(handle, buffer.get(), sizeBuffer);
+		ReadData(handle, buffer.get(), sizeBuffer);
+
+
+		std::stringstream stringStream;
+		std::string strBuffer;
 
 		stringStream << buffer.get();
 
@@ -82,18 +110,18 @@ void Server::read(Bar& bar)
 				priceStream >> price;
 
 				bar.addElementToMap(name, price);
-			}			
-
+			}
 		}
 
-		if (_kbhit())
-		{
-			//if (_getch() == 3)  //Ctrl + C
-			//{
-			//	break;
-			//	isReadData = false;
-			//}
-			
+
+
+
+
+
+		//addElementToMapInBar(buffer.get(), bar);	
+
+		if (_getch() == cntrlC)  //Ctrl + C - stop read
+		{			
 			isReadData = false;
 			break;
 		}
@@ -133,9 +161,11 @@ void Server::run()
 	{
 
 		if (time.wMinute % 2) {
+
 			std::thread t1([&](){read(bars.front()); });
 
 			if (!bars.back().getMap().empty()) {
+				std::cout << "1" << "\n";
 				write(bars.back());
 			}
 
@@ -146,7 +176,8 @@ void Server::run()
 			std::thread t1([&]() {read(bars.back()); });
 
 			if (!bars.front().getMap().empty()) {
-				write(bars.front());
+				std::cout << "2" << "\n";
+				//write(bars.front());
 			}
 
 			t1.join();
@@ -155,7 +186,7 @@ void Server::run()
 		GetLocalTime(&time);
 	}
 
-	addEventToLog("Data reading is complete. Loading...");
+	addEventToLog("Data reading is complete");
 
 	for (auto & bar : bars)
 	{

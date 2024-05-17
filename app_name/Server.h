@@ -15,7 +15,8 @@
 #include <algorithm>
 #include <mutex>
 #include <thread>
- 
+
+constexpr int cntrlC = 3;
 
 class Server
 {
@@ -23,7 +24,7 @@ private:
 	void* handle;
 	const int sizeBuffer = 2000;
 	std::shared_ptr<char[]> buffer;
-	bool isReadData = 1;
+	bool isReadData = 1;	
 
 	std::vector <Bar> bars;
 	Logs logs{ time };
@@ -36,6 +37,7 @@ private:
 	void read(Bar &bar);
 	void write(Bar &bar);
 	void addEventToLog(const std::string& message);
+	void addElementToMapInBar(char* buffer, Bar& bar);
 public:
 	Server();
 	~Server();

@@ -12,7 +12,7 @@ const std::unordered_map<std::string, std::vector<double>> & Bar::getMap()
 	return map;
 }
 
-void Bar::addElementToMap(std::string name, double price)
+void Bar::addElementToMap(std::string &name, double &price)
 {
 
 	if (map.contains(name))

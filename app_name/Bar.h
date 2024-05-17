@@ -15,6 +15,6 @@ public:
 	const std::string& getTimeAndDateRead();
 
 	void setTimeAndDateRead(SYSTEMTIME& time);
-	void addElementToMap(std::string name, double price);
+	void addElementToMap(std::string &name, double &price);
 	void clearMap();
 };
