@@ -95,9 +95,8 @@ void Server::read(Bar& bar)
 
 		if (_kbhit())
 		{
-			std::cout << _getch();
-			//if(_getch() == )
-			if (_getch() == 'a')  //Ctrl + C
+
+			if (_getch() == 'c')  //Ctrl + C
 			{				
 				isReadData = false;
 				break;
@@ -119,7 +118,7 @@ void Server::write(Bar &bar)
 
 	for (const auto& [name, price] : bar.getMap())
 	{
-		write.open("Bars//" + name + ".txt", std::ios::out | std::ios::app);
+		write.open("Bars//" + name + ".csv", std::ios::out | std::ios::app);
 
 		double min = *std::min_element(begin(price), end(price));
 		double max = *std::max_element(begin(price), end(price));
@@ -138,7 +137,7 @@ void Server::run()
 	GetLocalTime(&time);
 
 	addEventToLog("Data reading started");
-	std::cout << "Press any key to stop reading...\n";
+	std::cout << "Press any key \"c\" to stop reading...\n";
 
  	while (isReadData)
 	{
