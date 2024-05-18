@@ -90,46 +90,28 @@ void Server::read(Bar& bar)
 		memset(buffer.get(), 0, sizeBuffer);
 		ReadData(handle, buffer.get(), sizeBuffer);
 
+		addElementToMapInBar(buffer.get(), bar);	
 
-		std::stringstream stringStream;
-		std::string strBuffer;
 
-		stringStream << buffer.get();
-
-		while (stringStream >> strBuffer)
+		if (_kbhit())
 		{
-			std::cmatch result;
-			std::regex regular("(\\w{6})""(,{1})" "(\\w+)" "(,{1})" "([\\d\.]+)" "(,{1})" "(\\d+)");
-
-			if (std::regex_match(strBuffer.c_str(), result, regular))
-			{
-				std::string name = result[1].str() + "_" + result[3].str();
-
-				std::stringstream priceStream(result[5]);
-				double price;
-				priceStream >> price;
-
-				bar.addElementToMap(name, price);
+			std::cout << _getch();
+			//if(_getch() == )
+			if (_getch() == 'a')  //Ctrl + C
+			{				
+				isReadData = false;
+				break;
 			}
-		}
 
-
-
-
-
-
-		//addElementToMapInBar(buffer.get(), bar);	
-
-		if (_getch() == cntrlC)  //Ctrl + C - stop read
-		{			
-			isReadData = false;
-			break;
+			//isReadData = false;
+			//break;
 		}
 
 		GetLocalTime(&time);
 	}
 
 }
+
 
 void Server::write(Bar &bar)
 {
@@ -156,6 +138,7 @@ void Server::run()
 	GetLocalTime(&time);
 
 	addEventToLog("Data reading started");
+	std::cout << "Press any key to stop reading...\n";
 
  	while (isReadData)
 	{
@@ -165,7 +148,6 @@ void Server::run()
 			std::thread t1([&](){read(bars.front()); });
 
 			if (!bars.back().getMap().empty()) {
-				std::cout << "1" << "\n";
 				write(bars.back());
 			}
 
@@ -176,8 +158,7 @@ void Server::run()
 			std::thread t1([&]() {read(bars.back()); });
 
 			if (!bars.front().getMap().empty()) {
-				std::cout << "2" << "\n";
-				//write(bars.front());
+				write(bars.front());
 			}
 
 			t1.join();
