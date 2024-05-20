@@ -26,6 +26,7 @@ private:
 	std::shared_ptr<char[]> buffer;
 	bool isReadData = 1;	
 	std::string tempBuffer;
+	int sizeDate;
 
 	std::vector <Bar> bars;
 	Logs logs{ time };

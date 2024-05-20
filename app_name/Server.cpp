@@ -58,12 +58,31 @@ void Server::addElementToMapInBar(char *buffer, Bar& bar)
 	std::stringstream stringStream;
 	std::string strBuffer;
 
-	stringStream << buffer;
+	std::string sBuffer = buffer;
+
+
+	if(!tempBuffer.empty())
+	{
+		sBuffer.insert(0,tempBuffer);
+		tempBuffer.erase();
+	}
+
+
+	if (sBuffer.back() != '\n') {
+		
+		int last = sBuffer.rfind('\n');
+		tempBuffer += sBuffer.substr((last + 1));
+		sBuffer.erase(last + 1);
+
+	}
+
+	stringStream << sBuffer;
 
 	while (stringStream >> strBuffer)
 	{
 		std::cmatch result;
-		std::regex regular("(\\w{6})""(,{1})" "(\\w+)" "(,{1})" "([\\d\.]+)" "(,{1})" "(\\d\\r{4,})");
+		std::regex regular("(\\w{6})""(,{1})" "(\\w+)" "(,{1})" "([\\d\.]+)" "(,{1})" "(\\d{4,})");
+
 
 		if (std::regex_match(strBuffer.c_str(), result, regular))
 		{
@@ -74,23 +93,7 @@ void Server::addElementToMapInBar(char *buffer, Bar& bar)
 			priceStream >> price;
 			bar.addElementToMap(name, price);
 		}
-		else {
-			tempBuffer += strBuffer;
-			std::cout << tempBuffer << "\n";
-			if (std::regex_match(tempBuffer.c_str(), result, regular))
-			{
-				std::string name = result[1].str() + "_" + result[3].str();
 
-				std::stringstream priceStream(result[5]);
-				double price;
-				priceStream >> price;
-
-				bar.addElementToMap(name, price);
-
-				tempBuffer.clear();
-			}
-
-		}
 	}
 }
 
@@ -104,7 +107,7 @@ void Server::read(Bar& bar)
 	while (!(time.wMinute - timeStartReading)) {
 
 		memset(buffer.get(), 0, sizeBuffer);
-		ReadData(handle, buffer.get(), sizeBuffer);
+		sizeDate = ReadData(handle, buffer.get(), sizeBuffer);
 		addElementToMapInBar(buffer.get(), bar);	
 
 
