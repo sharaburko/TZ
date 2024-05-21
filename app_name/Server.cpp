@@ -53,41 +53,43 @@ void Server::addEventToLog(const std::string& message)
 	logs.AddAnEvent(message, time);
 }
 
+std::string Server::checkingBuffer(std::string bufferStream) {
+
+	constexpr size_t positionCorrection = 1;
+
+	if (!tempBuffer.empty())
+	{
+		bufferStream.insert(0, tempBuffer);
+		tempBuffer.erase();
+	}
+
+
+	if (bufferStream.back() != '\n') {
+
+		int lastTransfer = bufferStream.rfind('\n');
+
+		tempBuffer += bufferStream.substr((lastTransfer + positionCorrection));
+		bufferStream.erase(lastTransfer + positionCorrection);
+	}
+
+	return bufferStream;
+}
+
 void Server::addElementToMapInBar(char *buffer, Bar& bar)
 {
 	std::stringstream stringStream;
 	std::string strBuffer;
 
-	std::string sBuffer = buffer;
-
-
-	if(!tempBuffer.empty())
-	{
-		sBuffer.insert(0,tempBuffer);
-		tempBuffer.erase();
-	}
-
-
-	if (sBuffer.back() != '\n') {
-		
-		int last = sBuffer.rfind('\n');
-		tempBuffer += sBuffer.substr((last + 1));
-		sBuffer.erase(last + 1);
-
-	}
-
-	stringStream << sBuffer;
+	stringStream << checkingBuffer(buffer);
 
 	while (stringStream >> strBuffer)
 	{
 		std::cmatch result;
-		std::regex regular("(\\w{6})""(,{1})" "(\\w+)" "(,{1})" "([\\d\.]+)" "(,{1})" "(\\d{4,})");
-
+		std::regex regular("(\\w+)""(,{1})" "(\\w+)" "(,{1})" "([\\d\.]+)" "(,{1})" "(\\d+)");
 
 		if (std::regex_match(strBuffer.c_str(), result, regular))
 		{
 			std::string name = result[1].str() + "_" + result[3].str();
-
 			std::stringstream priceStream(result[5]);
 			double price;
 			priceStream >> price;
@@ -104,10 +106,10 @@ void Server::read(Bar& bar)
 	bar.setTimeAndDateRead(time);
 	int timeStartReading = time.wMinute;
 
-	while (!(time.wMinute - timeStartReading)) {
-
+	while (!(time.wMinute - timeStartReading)) 
+	{
 		memset(buffer.get(), 0, sizeBuffer);
-		sizeDate = ReadData(handle, buffer.get(), sizeBuffer);
+		ReadData(handle, buffer.get(), sizeBuffer);
 		addElementToMapInBar(buffer.get(), bar);	
 
 

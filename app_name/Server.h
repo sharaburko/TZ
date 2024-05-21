@@ -26,7 +26,6 @@ private:
 	std::shared_ptr<char[]> buffer;
 	bool isReadData = 1;	
 	std::string tempBuffer;
-	int sizeDate;
 
 	std::vector <Bar> bars;
 	Logs logs{ time };
@@ -40,6 +39,7 @@ private:
 	void write(Bar &bar);
 	void addEventToLog(const std::string& message);
 	void addElementToMapInBar(char* buffer, Bar& bar);
+	std::string checkingBuffer(std::string bufferStream);
 public:
 	Server();
 	~Server();
