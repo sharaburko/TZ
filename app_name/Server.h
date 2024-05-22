@@ -18,6 +18,16 @@
 
 constexpr int cntrlC = 3;
 
+inline BOOL WINAPI HandlerRoutine(
+	_In_ DWORD dwCtrlType
+)
+{
+	if (dwCtrlType == CTRL_C_EVENT) {
+		return 1;
+	}
+}
+
+
 class Server
 {
 private:

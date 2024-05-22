@@ -113,17 +113,18 @@ void Server::read(Bar& bar)
 		addElementToMapInBar(buffer.get(), bar);	
 
 
-		if (_kbhit())
+		//if (_kbhit())
+		if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) HandlerRoutine, true))
 		{
 
-			if (_getch() == 'c')  //Ctrl + C
-			{				
-				isReadData = false;
-				break;
-			}
+			//if (_getch() == 'c')  //Ctrl + C
+			//{				
+			//	isReadData = false;
+			//	break;
+			//}
 
-			//isReadData = false;
-			//break;
+			isReadData = false;
+			break;
 		}
 
 		GetLocalTime(&time);
