@@ -11,6 +11,7 @@ Server::Server()
 
 Server::~Server()
 {
+	stop();
 	DeleteServer(handle);
 	addEventToLog("Server deleted");
 }
@@ -44,6 +45,15 @@ void Server::start()
 
 void Server::stop()
 {
+	addEventToLog("Data reading stopped");
+
+	for (auto& bar : bars)
+	{
+		if (!bar.getMap().empty()) {
+			write(bar);
+		}
+	}
+
 	StopServer(handle);
 	addEventToLog("Server is stopped");
 }
@@ -106,27 +116,11 @@ void Server::read(Bar& bar)
 	bar.setTimeAndDateRead(time);
 	int timeStartReading = time.wMinute;
 
-	while (!(time.wMinute - timeStartReading)) 
+	while (!(time.wMinute - timeStartReading))
 	{
 		memset(buffer.get(), 0, sizeBuffer);
 		ReadData(handle, buffer.get(), sizeBuffer);
-		addElementToMapInBar(buffer.get(), bar);	
-
-
-		//if (_kbhit())
-		if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) HandlerRoutine, true))
-		{
-
-			//if (_getch() == 'c')  //Ctrl + C
-			//{				
-			//	isReadData = false;
-			//	break;
-			//}
-
-			isReadData = false;
-			break;
-		}
-
+		addElementToMapInBar(buffer.get(), bar);
 		GetLocalTime(&time);
 	}
 
@@ -151,14 +145,16 @@ void Server::write(Bar &bar)
 
 	bar.clearMap();
 }
+
  
 void Server::run()
-{
+{	
+
 	start();
 	GetLocalTime(&time);
 
 	addEventToLog("Data reading started");
-	std::cout << "Press any key \"c\" to stop reading...\n";
+	std::cout << "Press any key Ctrl + \"c\" to stop reading...\n";
 
  	while (isReadData)
 	{
@@ -189,12 +185,9 @@ void Server::run()
 
 	addEventToLog("Data reading is complete");
 
-	for (auto & bar : bars)
-	{
-		if (!bar.getMap().empty()) {
-			write(bar);
-		}
-	}
 
-	stop();
 }
+
+
+
+

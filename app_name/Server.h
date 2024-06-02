@@ -8,25 +8,13 @@
 #include "Bar.h"
 #include "Windows.h">
 #include <string>
-#include <conio.h>
 #include <sstream>
 #include <regex>
 #include <unordered_map>
 #include <algorithm>
 #include <mutex>
 #include <thread>
-
-constexpr int cntrlC = 3;
-
-inline BOOL WINAPI HandlerRoutine(
-	_In_ DWORD dwCtrlType
-)
-{
-	if (dwCtrlType == CTRL_C_EVENT) {
-		return 1;
-	}
-}
-
+#include <stdio.h>
 
 class Server
 {
@@ -34,7 +22,7 @@ private:
 	void* handle;
 	const int sizeBuffer = 2000;
 	std::shared_ptr<char[]> buffer;
-	bool isReadData = 1;	
+	bool isReadData = true;
 	std::string tempBuffer;
 
 	std::vector <Bar> bars;
@@ -50,10 +38,10 @@ private:
 	void addEventToLog(const std::string& message);
 	void addElementToMapInBar(char* buffer, Bar& bar);
 	std::string checkingBuffer(std::string bufferStream);
+
 public:
 	Server();
 	~Server();
-
 	void run();
 };
 

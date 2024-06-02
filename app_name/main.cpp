@@ -1,11 +1,24 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Server.h"
 
+BOOL HandlerRoutine(DWORD dwCtrlType);
+Server server;
+
 int main() {
 	setlocale(LC_ALL, "rus");
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE)HandlerRoutine, true);
+	server.run();
+	return 0;
+}
 
-	Server server;
-	server.run();	
+BOOL HandlerRoutine(DWORD dwCtrlType) {
+
+	if (dwCtrlType == CTRL_C_EVENT) {
+		Beep(750, 300);
+		server.~Server();
+		system("pause");
+		return 1;
+	}
 
 	return 0;
 }
