@@ -10,3 +10,6 @@ TZ/
 [Tt]emp/
 app_name/[Ll]ogs/
 app_name/[Bb]ars/
+Bars/*.txt
+Logs/*.log
+Logs/Quotes.log
