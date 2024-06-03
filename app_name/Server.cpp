@@ -116,7 +116,7 @@ void Server::read(Bar& bar)
 	bar.setTimeAndDateRead(time);
 	int timeStartReading = time.wMinute;
 
-	while (!(time.wMinute - timeStartReading))
+	while (!(time.wMinute - timeStartReading) && isReadData)
 	{
 		memset(buffer.get(), 0, sizeBuffer);
 		ReadData(handle, buffer.get(), sizeBuffer);

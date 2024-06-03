@@ -15,8 +15,8 @@ BOOL HandlerRoutine(DWORD dwCtrlType) {
 
 	if (dwCtrlType == CTRL_C_EVENT) {
 		Beep(750, 300);
-		server.~Server();
-		system("pause");
+		server.stop_loop();
+		//system("pause");
 		return 1;
 	}
 

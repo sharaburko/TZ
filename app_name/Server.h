@@ -43,5 +43,6 @@ public:
 	Server();
 	~Server();
 	void run();
+	void stop_loop() { isReadData = false; }
 };
 
